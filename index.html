@@ -124,14 +124,15 @@
     #actionsRow button.primary { background: #16a34a; color: #fff; border-color: #12833c; }
     #actionsRow button.primary:hover { filter: brightness(0.95); }
 
-    /* Vote buttons (clean) */
+    /* Vote buttons */
     .vote {
       cursor: pointer;
       margin-right: 16px;
       user-select: none;
     }
-    .vote .count {
-      font-weight: 600;
+    
+    .vote.down.active {
+      color: gray;   /* 👎 becomes gray when selected */
     }
 </style>
 </head>
@@ -343,34 +344,49 @@
   }
   
   /* One-time vote; persists in localStorage; no undo */
-function handleVote(e){
-  const target = e.target.closest('.vote');
-  if (!target) return;
+    function handleVote(e){
+      const target = e.target.closest('.vote');
+      if (!target) return;
+    
+      const id = Number(target.dataset.id);
+      const field = target.dataset.field;  // 'ThumbsUp' | 'ThumbsDown'
+      const prev = getVote(id);
+    
+      const cell = target.parentElement;
+      const upEl = cell.querySelector('.vote.up');
+      const downEl = cell.querySelector('.vote.down');
+    
+      const adjust = (el, delta) => {
+        if (!el) return;
+        const span = el.querySelector('.count');
+        if (!span) return; // 👎 has no count
+        const n = Number(span.textContent) || 0;
+        span.textContent = String(n + delta);
+      };
+    
+      if (prev === field) {
+        // toggle off
+        localStorage.removeItem(voteKey(id));
+        target.classList.remove('active');
+        if (field === 'ThumbsUp') adjust(upEl, -1);
+      } else {
+        // switch or new vote
+        if (prev === 'ThumbsUp') adjust(upEl, -1);
+        localStorage.setItem(voteKey(id), field);
+    
+        // reset styles
+        upEl.classList.remove('active');
+        downEl.classList.remove('active');
+    
+        if (field === 'ThumbsUp') {
+          adjust(upEl, +1);
+          upEl.classList.add('active');
+        } else {
+          downEl.classList.add('active');
+        }
+      }
+    }
 
-  const id = Number(target.dataset.id);
-  const field = target.dataset.field;  // 'ThumbsUp' | 'ThumbsDown'
-  const prev = getVote(id);
-
-  const cell = target.parentElement;
-  const upEl = cell.querySelector('.vote.up');
-
-  const adjust = (el, delta) => {
-    if (!el) return;
-    const span = el.querySelector('.count');
-    const n = Number(span.textContent) || 0;
-    span.textContent = String(n + delta);
-  };
-
-  if (prev === field) {
-    // toggle off
-    localStorage.removeItem(voteKey(id));
-    if (field === 'ThumbsUp') adjust(upEl, -1);
-  } else {
-    if (prev === 'ThumbsUp') adjust(upEl, -1);
-    localStorage.setItem(voteKey(id), field);
-    if (field === 'ThumbsUp') adjust(upEl, +1);
-  }
-}
 
 
   /* =========================
@@ -413,6 +429,7 @@ function handleVote(e){
 </script>
 </body>
 </html>
+
 
 
 
