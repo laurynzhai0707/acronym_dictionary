@@ -44,7 +44,6 @@
       gap: 10px;
       margin-bottom: 20px;
       justify-content: flex-start;
-      overflow: auto;
     }
     #searchBarWrapper input {
       width: 320px;                /* fixed medium width */
@@ -137,6 +136,13 @@
       opacity: .45;              /* dim it */
       filter: grayscale(100%);   /* 👎 becomes gray when selected */
     }
+
+    td.explanation {
+       max-height: 120px;   /* or any size you want */
+       overflow-y: auto;    /* scrolls only when text too long */
+       padding: 6px;
+       vertical-align: top; /* keeps text aligned neatly */
+     }
 </style>
 </head>
 <body>
@@ -269,7 +275,7 @@
          tr.innerHTML = `
            <td>${r.Title}</td>
            <td>${r.Name}</td>
-           <td>${r.Explanation}</td>
+           <td class="explanation">${r.Explanation}</td>
            <td style="text-align:center;">
              <span class="vote up ${userVote==='ThumbsUp' ? 'active' : ''}" data-id="${r.Id}" data-field="ThumbsUp">
                👍 <span class="count">${upCount}</span>
@@ -431,6 +437,7 @@
 </script>
 </body>
 </html>
+
 
 
 
