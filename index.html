@@ -117,12 +117,13 @@
     th:nth-child(2), td:nth-child(2) { width: 220px; }
     th:nth-child(4), td:nth-child(4) { width: 140px; text-align: center; }
 
-    td.explanation {
-       max-height: 120px;   /* or any size you want */
-       overflow-y: auto;    /* scrolls only when text too long */
-       padding: 6px;
-       vertical-align: top; /* keeps text aligned neatly */
-    }
+   .explain-box {
+     max-height: 140px;      /* adjust height as you like */
+     overflow-y: auto;       /* scrollbar only when needed */
+     padding: 6px;
+     line-height: 1.4;
+     word-break: break-word; /* prevent long strings from stretching the cell */
+   }
 
     /* No results + actions */
     #noResultsMessage { display: none; margin-top: 10px; font-style: italic; color: #888; }
@@ -275,7 +276,7 @@
          tr.innerHTML = `
            <td>${r.Title}</td>
            <td>${r.Name}</td>
-           <td class="explanation">${r.Explanation}</td>
+           <td><div class="explain-box">${r.Explanation}</div></td>
            <td style="text-align:center;">
              <span class="vote up ${userVote==='ThumbsUp' ? 'active' : ''}" data-id="${r.Id}" data-field="ThumbsUp">
                👍 <span class="count">${upCount}</span>
@@ -437,6 +438,7 @@
 </script>
 </body>
 </html>
+
 
 
 
