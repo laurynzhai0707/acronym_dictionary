@@ -124,10 +124,20 @@
     #actionsRow button.primary { background: #16a34a; color: #fff; border-color: #12833c; }
     #actionsRow button.primary:hover { filter: brightness(0.95); }
 
-    /* Vote buttons */
-    .vote { cursor: pointer; margin-right: 16px; user-select: none; }
-    .vote .count { font-weight: 600; }
-    .vote.selected {color: #0969da;   /* or green/red if you want */ font-weight: 700;}
+    /* Vote buttons (clean) */
+    .vote {
+      cursor: pointer;
+      margin-right: 16px;
+      user-select: none;
+    }
+    .vote .count {
+      font-weight: 600;
+    }
+    /* Highlight the user's active choice */
+    .vote.selected {
+      outline: 2px solid #0969da;
+      border-radius: 6px;
+    }
 </style>
 </head>
 <body>
@@ -237,61 +247,63 @@
   /* =========================
      RENDER
   ========================= */
-   function renderTable(filterAcr = '', filterName = ''){
-     const tb = document.getElementById('tableBody');
-     const th = document.getElementById('tableHead');
-     const noRes = document.getElementById('noResultsMessage');
-   
-     tb.innerHTML = '';
-   
-     const A = filterAcr.trim().toUpperCase();
-     const N = filterName.trim().toUpperCase();
-   
-     const filtered = rows.filter(r =>
-       r.Title.toUpperCase().includes(A) && r.Name.toUpperCase().includes(N)
-     );
-   
-     filtered.forEach(r => {
-       const userVote = getVote(r.Id); // 'ThumbsUp' | 'ThumbsDown' | null
-       const upCount   = r.ThumbsUp   + (userVote === 'ThumbsUp'   ? 1 : 0);
-       const downCount = r.ThumbsDown + (userVote === 'ThumbsDown' ? 1 : 0);
-   
-       const tr = document.createElement('tr');
-       tr.innerHTML = `
-         <td>${r.Title}</td>
-         <td>${r.Name}</td>
-         <td>${r.Explanation}</td>
-         <td style="text-align:center;">
-           <span class="vote up ${userVote==='ThumbsUp'?'selected':''}" data-id="${r.Id}" data-field="ThumbsUp">
-             👍 <span class="count">${upCount}</span>
-           </span>
-           <span class="vote down ${userVote==='ThumbsDown'?'selected':''}" data-id="${r.Id}" data-field="ThumbsDown">
-             👎 <span class="count" style="display:none;">${downCount}</span>
-           </span>
-         </td>
-       `;
-       tb.appendChild(tr);
-     });
-   
-     const hasInput = A.length > 0 || N.length > 0;
-     const anyMatch = filtered.length > 0;
-   
-     document.getElementById('tableBody').style.display = hasInput && anyMatch ? 'table-row-group' : 'none';
-     document.getElementById('tableHead').style.display = hasInput && anyMatch ? 'table-header-group' : 'none';
-     noRes.style.display = hasInput && !anyMatch ? 'block' : 'none';
-   
-     const uploadForm = document.getElementById('uploadForm');
-     if (hasInput && !anyMatch){
-       uploadForm.style.display = 'block';
-       if (A) document.getElementById('newAcronym').value = A;
-       if (N) document.getElementById('newName').value = filterName;
-     } else {
-       uploadForm.style.display = 'none';
-       document.getElementById('newAcronym').value = '';
-       document.getElementById('newName').value = '';
-       document.getElementById('newExplanation').value = '';
-     }
-   }
+    function renderTable(filterAcr = '', filterName = ''){
+      const tb = document.getElementById('tableBody');
+      const th = document.getElementById('tableHead');
+      const noRes = document.getElementById('noResultsMessage');
+    
+      tb.innerHTML = '';
+    
+      const A = filterAcr.trim().toUpperCase();
+      const N = filterName.trim().toUpperCase();
+    
+      const filtered = rows.filter(r =>
+        r.Title.toUpperCase().includes(A) && r.Name.toUpperCase().includes(N)
+      );
+    
+      filtered.forEach(r => {
+        const userVote = getVote(r.Id); // 'ThumbsUp' | 'ThumbsDown' | null
+        const upCount   = r.ThumbsUp   + (userVote === 'ThumbsUp'   ? 1 : 0);
+        const downCount = r.ThumbsDown + (userVote === 'ThumbsDown' ? 1 : 0);
+    
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.Title}</td>
+          <td>${r.Name}</td>
+          <td>${r.Explanation}</td>
+          <td style="text-align:center;">
+            <span class="vote up ${userVote==='ThumbsUp'?'selected':''}" data-id="${r.Id}" data-field="ThumbsUp">
+              👍 <span class="count">${upCount}</span>
+            </span>
+            <span class="vote down ${userVote==='ThumbsDown'?'selected':''}" data-id="${r.Id}" data-field="ThumbsDown">
+              👎 <span class="count">${downCount}</span>
+            </span>
+          </td>
+        `;
+        tb.appendChild(tr);
+      });
+    
+      const hasInput = A.length > 0 || N.length > 0;
+      const anyMatch = filtered.length > 0;
+    
+      document.getElementById('tableBody').style.display = hasInput && anyMatch ? 'table-row-group' : 'none';
+      document.getElementById('tableHead').style.display = hasInput && anyMatch ? 'table-header-group' : 'none';
+      noRes.style.display = hasInput && !anyMatch ? 'block' : 'none';
+    
+      // add-form prefill/toggle
+      const uploadForm = document.getElementById('uploadForm');
+      if (hasInput && !anyMatch){
+        uploadForm.style.display = 'block';
+        if (A) document.getElementById('newAcronym').value = A;
+        if (N) document.getElementById('newName').value = filterName;
+      } else {
+        uploadForm.style.display = 'none';
+        document.getElementById('newAcronym').value = '';
+        document.getElementById('newName').value = '';
+        document.getElementById('newExplanation').value = '';
+      }
+    }
+
   
   /* =========================
      EVENTS
@@ -337,41 +349,42 @@
   }
   
   /* One-time vote; persists in localStorage; no undo */
-   function handleVote(e){
-     const target = e.target.closest('.vote');
-     if (!target) return;
-   
-     const id = Number(target.dataset.id);
-     const field = target.dataset.field; // 'ThumbsUp' | 'ThumbsDown'
-     const prev = getVote(id);           // previous vote (or null)
-   
-     // Helper: adjust a count span
-     const adjust = (el, delta) => {
-       if (!el) return;
-       const span = el.querySelector('.count');
-       const n = Number(span.textContent) || 0;
-       span.textContent = String(n + delta);
-     };
-   
-     const cell = target.parentElement;
-     const upEl   = cell.querySelector('.vote.up');
-     const downEl = cell.querySelector('.vote.down');
-   
-     if (prev === field) {
-       // UNSELECT: remove current vote
-       localStorage.removeItem(voteKey(id));
-       target.classList.remove('selected');
-       adjust(target, -1);
-     } else {
-       // SWITCH or NEW vote
-       if (prev === 'ThumbsUp')   { upEl.classList.remove('selected');   adjust(upEl, -1); }
-       if (prev === 'ThumbsDown') { downEl.classList.remove('selected'); adjust(downEl, -1); }
-   
-       localStorage.setItem(voteKey(id), field);
-       target.classList.add('selected');
-       adjust(target, +1);
-     }
-   }
+    function handleVote(e){
+      const target = e.target.closest('.vote');
+      if (!target) return;
+    
+      const id = Number(target.dataset.id);
+      const field = target.dataset.field;        // 'ThumbsUp' | 'ThumbsDown'
+      const prev = getVote(id);                  // previous vote or null
+    
+      const cell   = target.parentElement;
+      const upEl   = cell.querySelector('.vote.up');
+      const downEl = cell.querySelector('.vote.down');
+    
+      // helper to adjust a count span by ±1
+      const adjust = (el, delta) => {
+        if (!el) return;
+        const span = el.querySelector('.count');
+        const n = Number(span.textContent) || 0;
+        span.textContent = String(n + delta);
+      };
+    
+      if (prev === field) {
+        // UNSELECT (toggle off current)
+        localStorage.removeItem(voteKey(id));
+        target.classList.remove('selected');
+        adjust(target, -1);
+      } else {
+        // SWITCH or NEW vote
+        if (prev === 'ThumbsUp')   { upEl.classList.remove('selected');   adjust(upEl, -1); }
+        if (prev === 'ThumbsDown') { downEl.classList.remove('selected'); adjust(downEl, -1); }
+    
+        localStorage.setItem(voteKey(id), field);
+        target.classList.add('selected');
+        adjust(target, +1);
+      }
+    }
+
 
   /* =========================
      XLSX I/O
@@ -413,6 +426,7 @@
 </script>
 </body>
 </html>
+
 
 
 
