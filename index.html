@@ -262,21 +262,21 @@
       const upCount = r.ThumbsUp + (userVote === 'ThumbsUp' ? 1 : 0);
     
       const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${r.Title}</td>
-        <td>${r.Name}</td>
-        <td>${r.Explanation}</td>
-        <td style="text-align:center;">
-          <span class="vote up ${userVote==='ThumbsUp' ? 'active':''}" 
-                data-id="${r.Id}" data-field="ThumbsUp">
-            👍 <span class="count">${upCount}</span>
-          </span>
-          <span class="vote down ${userVote==='ThumbsDown' ? 'active':''}" 
-                data-id="${r.Id}" data-field="ThumbsDown">
-            👎
-          </span>
-        </td>
-      `;
+       tr.innerHTML = `
+         <td>${r.Title}</td>
+         <td>${r.Name}</td>
+         <td>${r.Explanation}</td>
+         <td style="text-align:center;">
+           <span class="vote up ${userVote==='ThumbsUp' ? 'active':''}" 
+                 data-id="${r.Id}" data-field="ThumbsUp">
+             👍 <span class="count">${r.ThumbsUp + (userVote==='ThumbsUp' ? 1 : 0)}</span>
+           </span>
+           <span class="vote down ${userVote==='ThumbsDown' ? 'active':''}" 
+                 data-id="${r.Id}" data-field="ThumbsDown">
+             👎
+           </span>
+         </td>
+       `;
       tb.appendChild(tr);
     });
 
@@ -347,48 +347,47 @@
   }
   
   /* One-time vote; persists in localStorage; no undo */
-    function handleVote(e){
-      const target = e.target.closest('.vote');
-      if (!target) return;
-    
-      const id = Number(target.dataset.id);
-      const field = target.dataset.field;  // 'ThumbsUp' | 'ThumbsDown'
-      const prev = getVote(id);
-    
-      const cell = target.parentElement;
-      const upEl = cell.querySelector('.vote.up');
-      const downEl = cell.querySelector('.vote.down');
-    
-      const adjust = (el, delta) => {
-        if (!el) return;
-        const span = el.querySelector('.count');
-        if (!span) return; // 👎 has no count
-        const n = Number(span.textContent) || 0;
-        span.textContent = String(n + delta);
-      };
-    
-      if (prev === field) {
-        // toggle off
-        localStorage.removeItem(voteKey(id));
-        target.classList.remove('active');
-        if (field === 'ThumbsUp') adjust(upEl, -1);
-      } else {
-        // switch or new vote
-        if (prev === 'ThumbsUp') adjust(upEl, -1);
-        localStorage.setItem(voteKey(id), field);
-    
-        // reset styles
-        upEl.classList.remove('active');
-        downEl.classList.remove('active');
-    
-        if (field === 'ThumbsUp') {
-          adjust(upEl, +1);
-          upEl.classList.add('active');
-        } else {
-          downEl.classList.add('active');
-        }
-      }
-    }
+   function handleVote(e) {
+     const target = e.target.closest('.vote');
+     if (!target) return;
+   
+     const id = Number(target.dataset.id);
+     const field = target.dataset.field; // 'ThumbsUp' or 'ThumbsDown'
+     const prev = getVote(id);
+   
+     const cell = target.parentElement;
+     const upEl = cell.querySelector('.vote.up');
+     const downEl = cell.querySelector('.vote.down');
+   
+     const adjustUp = (delta) => {
+       const span = upEl.querySelector('.count');
+       if (!span) return;
+       span.textContent = String(Number(span.textContent) + delta);
+     };
+   
+     if (prev === field) {
+       // toggle off
+       localStorage.removeItem(voteKey(id));
+       target.classList.remove('active');
+       if (field === 'ThumbsUp') adjustUp(-1);
+     } else {
+       // new vote or switch
+       if (prev === 'ThumbsUp') adjustUp(-1);
+       localStorage.setItem(voteKey(id), field);
+   
+       // reset styles
+       upEl.classList.remove('active');
+       downEl.classList.remove('active');
+   
+       if (field === 'ThumbsUp') {
+         adjustUp(+1);
+         upEl.classList.add('active');
+       } else {
+         downEl.classList.add('active'); // 👎 just toggles gray
+       }
+     }
+   }
+
 
 
 
@@ -432,6 +431,7 @@
 </script>
 </body>
 </html>
+
 
 
 
