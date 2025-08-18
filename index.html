@@ -257,26 +257,29 @@
        r.Title.toUpperCase().includes(A) && r.Name.toUpperCase().includes(N)
      );
    
-     filtered.forEach(r => {
-       const userVote = getVote(r.Id); // 'ThumbsUp' | 'ThumbsDown' | null
-       const upCount = r.ThumbsUp + (userVote === 'ThumbsUp' ? 1 : 0);
-   
-       const tr = document.createElement('tr');
-       tr.innerHTML = `
-         <td>${r.Title}</td>
-         <td>${r.Name}</td>
-         <td>${r.Explanation}</td>
-         <td style="text-align:center;">
-           <span class="vote up" data-id="${r.Id}" data-field="ThumbsUp">
-             👍 <span class="count">${upCount}</span>
-           </span>
-           <span class="vote down" data-id="${r.Id}" data-field="ThumbsDown">
-             👎
-           </span>
-         </td>
-       `;
-       tb.appendChild(tr);
-     });
+    filtered.forEach(r => {
+      const userVote = getVote(r.Id); // 'ThumbsUp' | 'ThumbsDown' | null
+      const upCount = r.ThumbsUp + (userVote === 'ThumbsUp' ? 1 : 0);
+    
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${r.Title}</td>
+        <td>${r.Name}</td>
+        <td>${r.Explanation}</td>
+        <td style="text-align:center;">
+          <span class="vote up ${userVote==='ThumbsUp' ? 'active':''}" 
+                data-id="${r.Id}" data-field="ThumbsUp">
+            👍 <span class="count">${upCount}</span>
+          </span>
+          <span class="vote down ${userVote==='ThumbsDown' ? 'active':''}" 
+                data-id="${r.Id}" data-field="ThumbsDown">
+            👎
+          </span>
+        </td>
+      `;
+      tb.appendChild(tr);
+    });
+
    
      const hasInput = A.length > 0 || N.length > 0;
      const anyMatch = filtered.length > 0;
@@ -429,6 +432,7 @@
 </script>
 </body>
 </html>
+
 
 
 
