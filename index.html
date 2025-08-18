@@ -5,36 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Acronym Dictionary</title>
 <style>
-      html, body {
-      margin: 0;
-      height: 100%;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: url("HondaJet.jpg") no-repeat center center fixed;
-      background-size: cover;
-      overflow: hidden;             /* no page scroll */
-    }
-    
-    .page-wrap {
-      height: 100vh;                /* use viewport height directly */
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;          /* vertical center */
-      padding: 20px;
-      box-sizing: border-box;
-    }
-    
-    .card {
-      max-width: 1000px;
-      width: 100%;
-      text-align: center;
-      background: rgba(255,255,255,0.85);
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.15);
-      max-height: 90vh;             /* keep within screen */
-      overflow-y: auto;             /* scroll inside card if needed */
-    }
+ /* Page background */
+      body{
+        margin:0;
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+        background-image:url("HondaJet.jpg");        /* adjust if in a folder */
+        background-repeat:no-repeat;
+        background-position:center center;
+        background-attachment:fixed;
+        background-size:cover;
+        min-height:100vh;
+      }
+      
+      /* Centered card with translucent white */
+      .page-wrap{ width:100%; display:flex; justify-content:center; margin-top:50px; }
+      .card{ max-width:1000px; width:100%; text-align:center; }
+      .page-wrap .card{
+        background:rgba(255,255,255,0.85);
+        padding:25px;
+        border-radius:12px;
+        box-shadow:0 2px 8px rgba(0,0,0,.15);
+      }
 
 
     /* Guide text */
@@ -478,6 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 
 
