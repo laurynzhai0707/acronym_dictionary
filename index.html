@@ -132,7 +132,9 @@
     }
     
     .vote.down.active {
-      color: gray;   /* 👎 becomes gray when selected */
+      color: gray;  
+      opacity: .45;              /* dim it */
+      filter: grayscale(100%);   /* 👎 becomes gray when selected */
     }
 </style>
 </head>
@@ -428,6 +430,7 @@
 </script>
 </body>
 </html>
+
 
 
 
