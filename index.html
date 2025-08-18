@@ -5,20 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Acronym Dictionary</title>
 <style>
-    /* Full-page background */
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: url("HondaJet.jpg") no-repeat center center fixed;
-      background-size: cover;
+    /* Page background */
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background-image:url("HondaJet.jpg");        /* adjust if in a folder */
+      background-repeat:no-repeat;
+      background-position:center center;
+      background-attachment:fixed;
+      background-size:cover;
+      min-height:100vh;
     }
 
-    /* Transparent card styling */
-    .page-wrap .card {
-      background: rgba(255, 255, 255, 0.85);  /* white with 85% opacity */
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    /* Centered card with translucent white */
+    .page-wrap{ width:100%; display:flex; justify-content:center; margin-top:50px; }
+    .card{ max-width:1000px; width:100%; text-align:center; }
+    .page-wrap .card{
+      background:rgba(255,255,255,0.85);
+      padding:25px;
+      border-radius:12px;
+      box-shadow:0 2px 8px rgba(0,0,0,.15);
     }
 
     /* Page shell */
@@ -474,6 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 
 
