@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Acronym Dictionary</title>
+<style>
+  /* Page shell */
+  body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#f5f7fb; }
+  .page-wrap { width:100%; display:flex; justify-content:center; margin-top:50px; }
+  .card { max-width:1000px; width:100%; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,.08); padding:25px; border-radius:12px; background:#fff; }
+
+  /* Guide text */
+  .guide { font-size:14px; margin-bottom:20px; color:#444; text-align:left; }
+
+  /* Search bar row */
+  #searchBarWrapper { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px; justify-content:flex-start; }
+  #searchBarWrapper input { padding:10px 12px; border:1px solid #d0d7de; border-radius:8px; outline:none; }
+  #searchBarWrapper input:focus { border-color:#0969da; box-shadow: 0 0 0 3px rgba(9,105,218,.15); }
+  #searchBarWrapper button { padding:10px 14px; border:1px solid #d0d7de; border-radius:10px; background:#f6f8fa; cursor:pointer; }
+  #searchBarWrapper button:hover { background:#eef2f7; }
+
+  /* Upload form */
+  #uploadForm { display:none; margin-top:20px; }
+  .form-inner { background:#f9fbfd; padding:15px; border-radius:10px; border:1px solid #e5e9f0; text-align:left; }
+  .form-title { margin:0 0 10px 0; font-weight:600; }
+  .form-grid { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px; }
+  .form-grid .field { display:flex; flex-direction:column; gap:6px; }
+  .form-grid input, .form-grid textarea {
+    padding:10px 12px; border:1px solid #d0d7de; border-radius:10px; min-height:44px; outline:none;
+  }
+  .form-grid textarea { min-height:100px; resize:both; } /* draggable & larger, per your request */
+  .form-actions button { padding:10px 14px; border-radius:10px; border:1px solid #d0d7de; background:#0969da; color:#fff; cursor:pointer; }
+  .form-actions button:hover { filter:brightness(0.95); }
+
+  /* Table */
+  table { width:100%; border-collapse:collapse; margin-top:20px; }
+  thead { display:none; }
+  tbody { display:none; }
+  th, td { border:1px solid #e5e9f0; padding:10px; text-align:left; vertical-align:top; }
+  thead tr { background:#f4f6f9; }
+  th:nth-child(1), td:nth-child(1) { width:140px; }
+  th:nth-child(2), td:nth-child(2) { width:220px; }
+  th:nth-child(4), td:nth-child(4) { width:140px; text-align:center; }
+
+  /* No results + actions */
+  #noResultsMessage { display:none; margin-top:10px; font-style:italic; color:#888; }
+  #actionsRow { margin-top:14px; display:flex; gap:10px; justify-content:flex-end; }
+  #actionsRow button { padding:10px 14px; border-radius:10px; border:1px solid #d0d7de; background:#f6f8fa; cursor:pointer; }
+  #actionsRow button.primary { background:#16a34a; color:#fff; border-color:#12833c; }
+  #actionsRow button.primary:hover { filter:brightness(0.95); }
+
+  /* Vote buttons */
+  .vote { cursor:pointer; margin-right:16px; user-select:none; }
+  .vote .count { font-weight:600; }
+  .vote.down.disabled { opacity:.4; pointer-events:none; }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+  <div class="card">
+
+    <!-- User Guide -->
+    <p class="guide">
+      🔍 <strong>How to Use:</strong><br>
+      • Use the search fields below to find existing acronyms by typing either the abbreviation or the full name.<br>
+      • When entering a new acronym, the form will pre-fill with your search to avoid retyping.<br>
+      • Click <em>Download Updated Excel</em> to save a revised file you can commit back to the repo.
+    </p>
+
+    <!-- SEARCH BAR AND UPLOAD FORM WRAPPER -->
+    <div style="width:100%; display:flex; justify-content:center;">
+      <div style="width:1000px;">
+
+        <!-- Search UI (Full width alignment) -->
+        <div id="searchBarWrapper">
+          <input id="acronymSearchBox" placeholder="Search by Acronym (e.g., HACI)" />
+          <input id="nameSearchBox" placeholder="Search by Name (e.g., Honda Aircraft Company)" />
+          <button type="button" id="addBtn">➕ Add Acronym</button>
+        </div>
+
+        <!-- Upload Form -->
+        <div id="uploadForm">
+          <div class="form-inner">
+            <p class="form-title">Fill out information about the new acronym below</p>
+            <div class="form-grid">
+              <div class="field" style="width:160px;">
+                <label for="newAcronym">Acronym (required)</label>
+                <input id="newAcronym" placeholder="e.g., HACI" />
+              </div>
+              <div class="field" style="flex:1; min-width:260px;">
+                <label for="newName">Name (required)</label>
+                <input id="newName" placeholder="e.g., Honda Aircraft Company" />
+              </div>
+              <div class="field" style="flex:1; min-width:340px;">
+                <label for="newExplanation">Explanation (optional)</label>
+                <textarea id="newExplanation" placeholder="Description, context, or usage notes..."></textarea>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="button" id="submitBtn">Submit</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Acronym Table -->
+    <table id="acronymTable">
+      <thead id="tableHead">
+        <tr>
+          <th>Acronym</th>
+          <th>Name</th>
+          <th>Explanation</th>
+          <th>Feedback</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+
+    <!-- No Results Message -->
+    <div id="noResultsMessage">No results found.</div>
+
+    <!-- Actions -->
+    <div id="actionsRow" style="display:none;">
+      <button id="downloadBtn" class="primary">⬇️ Download Updated Excel</button>
+      <button id="resetBtn">Reset Changes</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- SheetJS (XLSX) -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" integrity="sha256-1z1+QxqJH3ZgC5d8wnqP8EHwG5Q3s4Xw3aX/t2G3O34=" crossorigin="anonymous"></script>
+
+<script>
+/* =========================
+   CONFIG
+========================= */
+const GH_RAW_XLSX_URL = 'acronyms.xlsx'; // If your pages base path differs, adjust the path.
+
+/* =========================
+   STATE
+========================= */
+let rows = [];         // Array of { Id, Title, Name, Explanation, ThumbsUp, ThumbsDown }
+let dirty = false;     // Any in-memory changes not yet downloaded
+let nextId = 1;        // Local incremental ids for voting keys if source has no Id column
+
+/* =========================
+   UTILITIES
+========================= */
+function voteKey(id){ return `vote_${id}`; }
+function getVote(id){ return localStorage.getItem(voteKey(id)); }
+function setVote(id,field){ localStorage.setItem(voteKey(id), field); }
+function clearVote(id){ localStorage.removeItem(voteKey(id)); }
+
+function normalizeRow(r, idx){
+  return {
+    Id: r.Id ?? idx+1,
+    Title: (r.Title || '').toString(),
+    Name: (r.Name || '').toString(),
+    Explanation: (r.Explanation || '').toString(),
+    ThumbsUp: Number.isFinite(+r.ThumbsUp) ? +r.ThumbsUp : 0,
+    ThumbsDown: Number.isFinite(+r.ThumbsDown) ? +r.ThumbsDown : 0
+  };
+}
+
+function markDirty(val=true){
+  dirty = val;
+  document.getElementById('actionsRow').style.display = dirty ? 'flex' : 'none';
+}
+
+/* =========================
+   RENDER
+========================= */
+function renderTable(filterAcr = '', filterName = ''){
+  const tb = document.getElementById('tableBody');
+  const th = document.getElementById('tableHead');
+  const noRes = document.getElementById('noResultsMessage');
+
+  tb.innerHTML = '';
+
+  const A = filterAcr.trim().toUpperCase();
+  const N = filterName.trim().toUpperCase();
+
+  const filtered = rows.filter(r =>
+    r.Title.toUpperCase().includes(A) && r.Name.toUpperCase().includes(N)
+  );
+
+  filtered.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r.Title}</td>
+      <td>${r.Name}</td>
+      <td>${r.Explanation}</td>
+      <td style="text-align:center;">
+        <span class="vote up" data-id="${r.Id}" data-field="ThumbsUp">👍 <span class="count">${r.ThumbsUp}</span></span>
+        <span class="vote down ${getVote(r.Id)==='ThumbsDown'?'disabled':''}" data-id="${r.Id}" data-field="ThumbsDown">👎 <span class="count" style="display:none;">${r.ThumbsDown}</span></span>
+      </td>
+    `;
+    tb.appendChild(tr);
+  });
+
+  const hasInput = A.length > 0 || N.length > 0;
+  const anyMatch = filtered.length > 0;
+
+  document.getElementById('tableBody').style.display = hasInput && anyMatch ? 'table-row-group' : 'none';
+  document.getElementById('tableHead').style.display = hasInput && anyMatch ? 'table-header-group' : 'none';
+  noRes.style.display = hasInput && !anyMatch ? 'block' : 'none';
+
+  // Auto show/hide Add form with prefill
+  const uploadForm = document.getElementById('uploadForm');
+  if (hasInput && !anyMatch){
+    uploadForm.style.display = 'block';
+    if (A) document.getElementById('newAcronym').value = A;
+    if (N) document.getElementById('newName').value = filterName;
+  } else if (!dirty) {
+    // Only auto-hide if there are no unsaved changes pending
+    uploadForm.style.display = 'none';
+    document.getElementById('newAcronym').value = '';
+    document.getElementById('newName').value = '';
+    document.getElementById('newExplanation').value = '';
+  }
+}
+
+/* =========================
+   EVENT HANDLERS
+========================= */
+function onSearch(){
+  const a = document.getElementById('acronymSearchBox').value;
+  const n = document.getElementById('nameSearchBox').value;
+  renderTable(a, n);
+}
+
+function toggleUploadForm(){
+  const f = document.getElementById('uploadForm');
+  const a = document.getElementById('acronymSearchBox').value.trim();
+  const n = document.getElementById('nameSearchBox').value.trim();
+  if (f.style.display === 'none'){
+    if (a) document.getElementById('newAcronym').value = a.toUpperCase();
+    if (n) document.getElementById('newName').value = n;
+    f.style.display = 'block';
+  } else {
+    f.style.display = 'none';
+  }
+}
+
+function submitAcronym(){
+  const ac = document.getElementById('newAcronym').value.trim().toUpperCase();
+  const nm = document.getElementById('newName').value.trim();
+  const ex = document.getElementById('newExplanation').value.trim();
+
+  if (!ac || !nm){ alert('Acronym and Name are required.'); return; }
+
+  const duplicate = rows.some(r => r.Title.toUpperCase() === ac);
+  if (duplicate && !confirm('⚠️ This acronym already exists. Do you want to add another entry?')) return;
+
+  // create new row
+  const newRow = { Id: ++nextId, Title: ac, Name: nm, Explanation: ex, ThumbsUp: 0, ThumbsDown: 0 };
+  rows.push(newRow);
+  markDirty(true);
+
+  // refresh view
+  renderTable(document.getElementById('acronymSearchBox').value, document.getElementById('nameSearchBox').value);
+
+  // keep the form open for possible further edits
+  alert('✅ Acronym added (not yet saved to Excel). Use "Download Updated Excel".');
+}
+
+function handleVote(e){
+  const target = e.target.closest('.vote');
+  if (!target) return;
+
+  const id = Number(target.dataset.id);
+  const field = target.dataset.field; // 'ThumbsUp' or 'ThumbsDown'
+  const opp = field === 'ThumbsUp' ? 'ThumbsDown' : 'ThumbsUp';
+  const prev = getVote(id);
+
+  // find row
+  const r = rows.find(x => x.Id === id);
+  if (!r) return;
+
+  // if already voted opposite, ask to remove first
+  if (prev && prev !== field){
+    alert('⚠️ Remove opposite vote first (clear your previous vote).');
+    return;
+  }
+
+  // determine span
+  const countSpan = target.querySelector('.count');
+  let cnt = Number(countSpan.innerText) || 0;
+
+  if (prev === field){
+    // undo vote
+    cnt = Math.max(0, cnt - 1);
+    clearVote(id);
+    if (field === 'ThumbsDown') target.classList.remove('disabled');
+  } else {
+    // apply vote
+    cnt++;
+    setVote(id, field);
+    if (field === 'ThumbsDown') target.classList.add('disabled');
+  }
+
+  // update state
+  r[field] = cnt;
+  markDirty(true);
+
+  // update UI count immediately
+  countSpan.innerText = String(cnt);
+}
+
+function resetChanges(){
+  if (!dirty){ return; }
+  if (!confirm('Discard all unsaved changes and reload file from repository?')) return;
+  loadXlsx(); // reload from source
+}
+
+/* =========================
+   XLSX I/O (SheetJS)
+========================= */
+async function loadXlsx(){
+  try{
+    const res = await fetch(GH_RAW_XLSX_URL, { cache:'no-store' });
+    if (!res.ok) throw new Error('Failed to fetch Excel. Make sure data/acronyms.xlsx exists.');
+    const ab = await res.arrayBuffer();
+    const wb = XLSX.read(ab);
+    const ws = wb.Sheets[wb.SheetNames[0] || 'Sheet1'];
+    const json = XLSX.utils.sheet_to_json(ws, { defval:'' });
+
+    rows = json.map((r, i) => normalizeRow(r, i));
+    // compute nextId based on max Id found
+    nextId = rows.reduce((m, r) => Math.max(m, Number(r.Id)||0), 0) || rows.length;
+
+    markDirty(false);
+    renderTable('', '');
+
+  } catch (err){
+    console.error(err);
+    alert('❌ ' + err.message);
+  }
+}
+
+function downloadUpdatedExcel(){
+  // Build a worksheet with consistent columns
+  const data = rows.map(r => ({
+    Id: r.Id,
+    Title: r.Title,
+    Name: r.Name,
+    Explanation: r.Explanation,
+    ThumbsUp: r.ThumbsUp,
+    ThumbsDown: r.ThumbsDown
+  }));
+  const ws = XLSX.utils.json_to_sheet(data, { header: ['Id','Title','Name','Explanation','ThumbsUp','ThumbsDown'] });
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Acronyms');
+
+  const wbout = XLSX.write(wb, { bookType:'xlsx', type:'array' });
+  const blob = new Blob([wbout], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'acronyms_updated.xlsx';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+
+  alert('📥 File downloaded. Commit it to your repo at data/acronyms.xlsx to publish changes.');
+  markDirty(false);
+}
+
+/* =========================
+   BOOTSTRAP
+========================= */
+document.addEventListener('DOMContentLoaded', () => {
+  // load file
+  loadXlsx();
+
+  // listeners
+  document.getElementById('acronymSearchBox').addEventListener('input', onSearch);
+  document.getElementById('nameSearchBox').addEventListener('input', onSearch);
+
+  document.getElementById('addBtn').addEventListener('click', toggleUploadForm);
+  document.getElementById('submitBtn').addEventListener('click', submitAcronym);
+
+  document.getElementById('downloadBtn').addEventListener('click', downloadUpdatedExcel);
+  document.getElementById('resetBtn').addEventListener('click', resetChanges);
+
+  // Delegate vote clicks
+  document.getElementById('acronymTable').addEventListener('click', handleVote);
+});
+</script>
+</body>
+</html>
