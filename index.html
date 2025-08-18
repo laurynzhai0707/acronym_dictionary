@@ -5,10 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Acronym Dictionary</title>
 <style>
+  /* Full-page background */
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: url("HondaJet.jpg") no-repeat center center fixed;
+    background-size: cover;
+  }
+
+/* Transparent card styling */
+  .page-wrap .card {
+    background: rgba(255, 255, 255, 0.85);  /* white with 85% opacity */
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  
   /* Page shell */
   body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#f5f7fb; }
   .page-wrap { width:100%; display:flex; justify-content:center; margin-top:50px; }
-  .card { max-width:1000px; width:100%; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,.08); padding:25px; border-radius:12px; background:#fff; }
+  .card { max-width:1000px; width:100%; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,.08); padding:25px; border-radius:12px; }
 
   /* Guide text */
   .guide { font-size:14px; margin-bottom:20px; color:#444; text-align:left; }
@@ -54,16 +70,6 @@
   .vote { cursor:pointer; margin-right:16px; user-select:none; }
   .vote .count { font-weight:600; }
   .vote.down.disabled { opacity:.4; pointer-events:none; }
-
-  /* Backgorund */
-  body {
-    margin: 0;
-    background-image: url("HondaJet.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
-  }
 
 </style>
 </head>
@@ -408,6 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 
 
