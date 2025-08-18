@@ -317,12 +317,14 @@
   
   function submitAcronym(){
     const ac = document.getElementById('newAcronym').value.trim().toUpperCase();
-    const nm = document.getElementById('newName').value.trim();
+    const nm = document.getElementById('newName').value.trim().toUpperCase();
     const ex = document.getElementById('newExplanation').value.trim();
     if (!ac || !nm){ alert('Acronym and Name are required.'); return; }
   
-    const duplicate = rows.some(r => r.Title.toUpperCase() === ac);
-    if (duplicate && !confirm('⚠️ This acronym already exists. Do you want to add another entry?')) return;
+    const duplicate = rows.some(r => 
+      r.Title.toUpperCase() === ac && r.Name.toUpperCase() === nm
+    );
+    if (duplicate && !confirm('⚠️ This acronym with the same name already exists. Do you want to add another entry?')) return;
   
     const newRow = { Id: ++nextId, Title: ac, Name: nm, Explanation: ex, ThumbsUp: 0, ThumbsDown: 0 };
     rows.push(newRow);
@@ -331,7 +333,7 @@
     renderTable(document.getElementById('acronymSearchBox').value,
                 document.getElementById('nameSearchBox').value);
   
-    alert('✅ Acronym added locally.');
+    alert('✅ Acronym added successfully.');
   }
   
   /* One-time vote; persists in localStorage; no undo */
@@ -411,6 +413,7 @@
 </script>
 </body>
 </html>
+
 
 
 
