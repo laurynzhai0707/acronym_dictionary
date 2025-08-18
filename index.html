@@ -84,20 +84,20 @@
         <div id="uploadForm">
           <div class="form-inner">
             <p class="form-title">Fill out information about the new acronym below</p>
-            <div class="form-grid">
-              <div class="field" style="width:160px;">
-                <label for="newAcronym">Acronym (required)</label>
-                <input id="newAcronym" placeholder="e.g., HACI" />
-              </div>
-              <div class="field" style="flex:1; min-width:260px;">
-                <label for="newName">Name (required)</label>
-                <input id="newName" placeholder="e.g., Honda Aircraft Company" />
-              </div>
-              <div class="field" style="flex:1; min-width:340px;">
-                <label for="newExplanation">Explanation (optional)</label>
-                <textarea id="newExplanation" placeholder="Description, context, or usage notes..."></textarea>
-              </div>
-            </div>
+        <div class="form-grid">
+          <div class="field" style="width:160px;">
+            <label for="newAcronym">Acronym (required)</label>
+            <textarea id="newAcronym" rows="1" placeholder="e.g., HACI"></textarea>
+          </div>
+          <div class="field" style="flex:1; min-width:260px;">
+            <label for="newName">Name (required)</label>
+            <textarea id="newName" rows="1" placeholder="e.g., Honda Aircraft Company"></textarea>
+          </div>
+          <div class="field" style="flex:1; min-width:340px;">
+            <label for="newExplanation">Explanation (optional)</label>
+            <textarea id="newExplanation" placeholder="Description, context, or usage notes..."></textarea>
+          </div>
+        </div>
             <div class="form-actions">
               <button type="button" id="submitBtn">Submit</button>
             </div>
@@ -397,6 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 
 
