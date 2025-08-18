@@ -5,40 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Acronym Dictionary</title>
 <style>
-    /* Page background */
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background-image:url("HondaJet.jpg");        /* adjust if in a folder */
-      background-repeat:no-repeat;
-      background-position:center center;
-      background-attachment:fixed;
-      background-size:cover;
-      min-height:100vh;
-    }
+  html, body {
+    margin: 0;
+    height: 100%;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: url("HondaJet.jpg") no-repeat center center fixed;
+    background-size: cover;
+    overflow: hidden;                     /* prevent whole-page scrolling */
+  }
 
-    /* Centered card with translucent white */
-    .page-wrap{ width:100%; display:flex; justify-content:center; margin-top:50px; }
-    .card{ max-width:1000px; width:100%; text-align:center; }
-    .page-wrap .card{
-      background:rgba(255,255,255,0.85);
-      padding:25px;
-      border-radius:12px;
-      box-shadow:0 2px 8px rgba(0,0,0,.15);
-    }
+  /* Center the card in the viewport */
+  .page-wrap {
+    height: 100%;                         /* fill viewport */
+    display: flex;
+    justify-content: center;
+    align-items: center;                   /* vertical centering */
+    padding: 20px;
+    box-sizing: border-box;
+  }
 
-    /* Page shell */
-    .page-wrap {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      margin-top: 50px;
-    }
-    .card {
-      max-width: 1000px;
-      width: 100%;
-      text-align: center;
-    }
+  .card {
+    max-width: 1000px;
+    width: 100%;
+    text-align: center;
+    background: rgba(255,255,255,0.85);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    max-height: 90vh;                     /* keep within screen */
+    overflow-y: auto;                     /* scroll inside card if needed */
+  }
 
     /* Guide text */
     .guide {
@@ -142,7 +138,8 @@
 <body>
 
 <div class="page-wrap">
-  <div class="card">
+    <div class="card">
+      <h1 style="margin:0 0 20px; text-align:center;">HACI Acronym Dictionary</h1>
 
     <!-- User Guide -->
     <p class="guide">
@@ -480,6 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 
 
