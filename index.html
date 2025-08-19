@@ -19,13 +19,14 @@
       }
       
       /* Centered card with translucent white */
-      .page-wrap{ width:100%; display:flex; justify-content:center; margin-top:50px; }
+      .page-wrap{ width:100%; display:flex; justify-content:center; margin-top:50px;overflow: hidden; }
       .card{ max-width:1000px; width:100%; text-align:center; }
       .page-wrap .card{
         background:rgba(255,255,255,0.85);
         padding:25px;
         border-radius:12px;
         box-shadow:0 2px 8px rgba(0,0,0,.15);
+        overflow-y: auto; 
       }
 
 
@@ -438,6 +439,7 @@
 </script>
 </body>
 </html>
+
 
 
 
